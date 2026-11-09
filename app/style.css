@@ -1,0 +1,474 @@
+/* ============================================================
+   DAHUA C4 SURVEILLANCE — style.css v13.0 Production Master
+   OLED C4 Seamless Edge-to-Edge Surveillance Wall
+   - 4 Cameras: 100% Screen Fill, 0 Gap, 0 Border, Exact 16:9
+   - Auto-Hiding Floating UI Overlay (10s Inactivity Timer)
+   - Synchronous Phantom Focus Frame (الاطار الوهمي التفاعلي)
+   - Clean Fullscreen: 100% Video, Zero Top Buttons
+   - Fullscreen Camera Switch Toast (إشعار التبديل الفوري)
+   - Persistent HD / SD Mode
+   ============================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #000000;
+  --overlay-bg: rgba(6, 10, 18, 0.94);
+  --border:     rgba(255, 255, 255, 0.12);
+  --acc:        #3b82f6;
+  --acc-glow:   #38bdf8;
+  --acc2:       #10b981;
+  --txt:        #f1f5f9;
+  --muted:      #94a3b8;
+  --warn:       #f59e0b;
+  --danger:     #ef4444;
+}
+
+html, body {
+  width: 100vw; height: 100vh;
+  background: #000;
+  color: var(--txt);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── APP ROOT ── GPU layer for OLED pixel orbit ─────────── */
+#appRoot {
+  width: 100vw; height: 100vh;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transition: transform 1.2s cubic-bezier(.25,.46,.45,.94);
+}
+
+/* ── VIEW SYSTEM ─────────────────────────────────────────── */
+.view {
+  position: absolute; inset: 0;
+  width: 100vw; height: 100vh;
+  opacity: 0; pointer-events: none;
+  transition: opacity 150ms ease;
+  overflow: hidden;
+}
+.view.active {
+  opacity: 1; pointer-events: all;
+}
+
+/* ── FOCUS RINGS (TV Remote Navigation) ─────────────────── */
+.focusable {
+  outline: none !important;
+}
+
+/* ── 10-SECOND AUTO-HIDE OVERLAY SYSTEM ──────────────────── */
+.topbar, .remote-help, .cam-hdr, .cam-osd, .cam-focus-badge {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  will-change: opacity, transform;
+}
+
+.ui-hidden .topbar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-14px) !important;
+}
+
+.ui-hidden .remote-help {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(14px) !important;
+}
+
+.ui-hidden .cam-hdr,
+.ui-hidden .cam-osd,
+.ui-hidden .cam-focus-badge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* In ui-hidden, the phantom focus frame also hides so watching is pure */
+.ui-hidden .cam-tile.is-focused {
+  box-shadow: none !important;
+}
+
+#btnReturnGrid { display: none; }
+.fullscreen-active #btnReturnGrid { display: inline-flex; }
+.fullscreen-active .topbar { z-index: 600; }
+.playback-timeline-wrap { padding: 8px 14px 14px; background: rgba(9, 15, 27, .94); }
+.playback-timeline-labels { display: flex; direction: ltr; justify-content: space-between; margin-bottom: 7px; color: #cbd5e1; font-size: 13px; }
+.playback-timeline-labels strong { color: #fff; font-variant-numeric: tabular-nums; }
+.playback-timeline { position: relative; direction: ltr; height: 30px; background: #273449; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
+.playback-timeline:focus { border-color: #38bdf8; outline: none; }
+.playback-timeline-segments { position: absolute; inset: 0; overflow: hidden; border-radius: 4px; }
+.playback-segment { position: absolute; top: 5px; bottom: 5px; background: #22c55e; border-radius: 2px; min-width: 2px; }
+.playback-timeline-cursor { position: absolute; top: -3px; bottom: -3px; width: 3px; background: #f8fafc; box-shadow: 0 0 0 2px #0f172a; pointer-events: none; }
+#settingsView { background: #20242d; }
+.settings-topbar { justify-content: space-between; }
+#nvrSettingsFrame { position: absolute; top: 50px; left: 0; width: 100%; height: calc(100% - 50px); border: 0; background: #20242d; }
+
+/* ── FLOATING TOP BAR ────────────────────────────────────── */
+.topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50px;
+  background: linear-gradient(to bottom, rgba(6,10,18,0.96) 0%, rgba(6,10,18,0.7) 80%, transparent 100%);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; gap: 12px;
+  z-index: 100;
+}
+.topbar-left, .topbar-center, .topbar-right {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.topbar-center { flex: 1; justify-content: center; }
+
+.live-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(16,185,129,.16);
+  border: 1px solid rgba(16,185,129,.4);
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; color: #34d399;
+}
+.live-dot {
+  width: 7px; height: 7px; background: var(--acc2);
+  border-radius: 50%; animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:.5; transform:scale(.85); }
+  50%      { opacity:1;  transform:scale(1.2); }
+}
+
+.clock-display { color: #fff; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.latency-pill {
+  background: rgba(15,23,42,.9); border: 1px solid rgba(56,189,248,.4);
+  padding: 3px 10px; border-radius: 14px; font-size: 12px;
+  font-weight: 700; color: #38bdf8; font-variant-numeric: tabular-nums;
+}
+.burnin-badge {
+  background: rgba(147,51,234,.18); border: 1px solid rgba(168,85,247,.45);
+  padding: 3px 8px; border-radius: 14px; font-size: 11px;
+  font-weight: 700; color: #d8b4fe;
+}
+
+.btn-group {
+  display: flex; background: rgba(11,15,25,0.85);
+  padding: 3px; border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.btn-nav {
+  background: transparent; border: none; color: var(--muted);
+  padding: 5px 12px; border-radius: 6px; font-size: 12px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.btn-nav.active { background: var(--acc); color: #fff; }
+.btn-nav:focus  { background: rgba(56,189,248,0.3) !important; color: #fff !important; box-shadow: 0 0 0 2px #38bdf8 !important; }
+
+#btnQualityToggle { display: flex; align-items: center; gap: 5px; }
+#btnQualityToggle.quality-hd { border-color: var(--acc); background: rgba(59,130,246,.3); }
+.quality-label { color: var(--muted); }
+.quality-val   { color: #38bdf8; font-weight: 700; }
+
+.btn-action {
+  background: rgba(17,24,39,0.85); border: 1px solid var(--border);
+  color: var(--txt); padding: 6px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.btn-action.btn-danger { color: var(--danger); }
+.btn-action:focus { box-shadow: 0 0 0 2px var(--acc-glow) !important; border-color: var(--acc-glow) !important; }
+
+/* ── CAMERA MATRIX (SEAMLESS EDGE-TO-EDGE) ──────────────── */
+.grid-container {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #000;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ── CAMERA TILE (Zero border, zero gap, seamless) ──────── */
+.cam-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  cursor: pointer;
+  outline: none !important;
+}
+
+/* ── PHANTOM FOCUS FRAME (الاطار الوهمي التفاعلي) ────────── */
+.cam-tile.is-focused {
+  box-shadow: inset 0 0 0 4px #38bdf8, inset 0 0 28px rgba(56, 189, 248, 0.7) !important;
+  z-index: 25;
+}
+
+.cam-focus-badge {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: rgba(14, 165, 233, 0.95);
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  z-index: 30;
+  pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 12px rgba(56, 189, 248, 0.6);
+  animation: focusPulse 1.6s infinite ease-in-out;
+}
+.cam-tile.is-focused .cam-focus-badge {
+  display: flex;
+}
+.cam-tile.fs .cam-focus-badge {
+  display: none !important;
+}
+@keyframes focusPulse {
+  0%, 100% { opacity: 0.95; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.04); }
+}
+
+/* ── CAMERA VIEWPORT (Absolute Layering — NO Flex Split) ─── */
+.cam-view {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  overflow: hidden;
+  display: block !important;
+}
+
+/* Both img and video take absolute full bounds */
+.cam-img,
+.cam-view img,
+.cam-view video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill !important;
+  background: transparent !important;
+  display: block;
+}
+
+/* Strict HD vs SD mutual exclusion: Never side-by-side */
+.cam-view.hd-active img {
+  display: none !important;
+}
+.cam-view:not(.hd-active) video {
+  display: none !important;
+}
+
+/* ── TILE HEADER & OSD OVERLAYS ─────────────────────────── */
+.cam-hdr {
+  position: absolute; top: 0; left: 0; right: 0; height: 36px;
+  padding: 0 12px;
+  background: linear-gradient(to bottom, rgba(0,0,0,.8) 0%, transparent 100%);
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 10; pointer-events: none;
+}
+.cam-name  { font-size: 13px; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.9); }
+.cam-badge {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+  background: var(--acc2); color: #fff;
+}
+
+.cam-osd {
+  position: absolute; bottom: 8px; left: 10px; right: 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 10; pointer-events: none;
+}
+.cam-lat {
+  background: rgba(0,0,0,.75); padding: 2px 7px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; color: #34d399;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid rgba(16,185,129,.35);
+}
+.cam-res {
+  background: rgba(15,23,42,.8); padding: 2px 7px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; color: #cbd5e1;
+  border: 1px solid var(--border);
+}
+
+/* ── FULLSCREEN OVERLAY (PURE 100% VIDEO — ZERO TOP BUTTONS) ── */
+.cam-tile.fs {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 500 !important;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.cam-tile.fs .cam-hdr,
+.cam-tile.fs .cam-osd {
+  display: none !important; /* Zero distractions in fullscreen */
+}
+
+/* ── TOAST NOTIFICATION (إشعار التبديل الفوري) ────────────── */
+.toast-notification {
+  position: fixed;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(15, 23, 42, 0.94);
+  border: 1px solid #38bdf8;
+  color: #fff;
+  padding: 9px 26px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.5);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  white-space: nowrap;
+}
+.toast-notification.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── FLOATING REMOTE HELP BAR (RICH LEGEND) ──────────────── */
+.remote-help {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40px;
+  background: linear-gradient(to top, rgba(6,10,18,0.98) 0%, rgba(6,10,18,0.75) 80%, transparent 100%);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  font-size: 12px; color: var(--muted); z-index: 100;
+}
+.help-item {
+  display: flex; align-items: center; gap: 5px;
+}
+.color-badge {
+  display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: middle;
+}
+.color-badge.red    { background: var(--danger); }
+.color-badge.green  { background: var(--acc2); }
+.color-badge.yellow { background: var(--warn); }
+.color-badge.blue   { background: var(--acc); }
+.key-badge {
+  background: rgba(30,41,59,0.9); border: 1px solid var(--border);
+  padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; color: #fff;
+}
+
+/* ── LOGIN SCREEN ────────────────────────────────────────── */
+#loginView {
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #060a12 0%, #0f172a 100%);
+}
+.login-card {
+  width: 520px; background: rgba(17,24,39,0.95);
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 40px; display: flex; flex-direction: column; gap: 24px;
+}
+.brand-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.brand-header h1 { font-size: 20px; font-weight: 700; }
+.subtitle { color: var(--muted); font-size: 13px; }
+.login-form { display: flex; flex-direction: column; gap: 14px; }
+.form-row { display: flex; flex-direction: column; gap: 6px; }
+.form-row label { color: var(--muted); font-size: 12px; font-weight: 600; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.input-field {
+  background: #0f172a; border: 1px solid var(--border);
+  color: var(--txt); border-radius: 8px; padding: 10px 14px;
+  font-size: 14px; width: 100%;
+}
+.input-field:focus { border-color: var(--acc-glow); outline: none; }
+.form-checkbox-row { display: flex; align-items: center; gap: 8px; }
+.checkbox-container { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--muted); }
+.btn-primary {
+  background: var(--acc); color: #fff; border: none;
+  border-radius: 10px; padding: 12px; font-size: 15px;
+  font-weight: 700; cursor: pointer; width: 100%;
+}
+.btn-primary:focus { box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.8) !important; }
+.status-msg { text-align: center; font-size: 13px; color: var(--warn); min-height: 18px; }
+
+/* ── PLAYBACK VIEW ───────────────────────────────────────── */
+#pbView { background: #060a12; }
+.view-title { font-size: 15px; font-weight: 700; color: #fff; }
+.playback-content { flex: 1; display: flex; gap: 10px; padding: 60px 10px 10px 10px; height: 100vh; overflow: hidden; }
+.playback-player-col { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.playback-list-col   { width: 340px; display: flex; flex-direction: column; gap: 8px; }
+.player-wrapper {
+  flex: 1; position: relative; background: #000; border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.playback-video-el { width: 100%; height: 100%; object-fit: contain; display: block; background: transparent !important; }
+.player-placeholder {
+  position: absolute; inset: 0; display: flex;
+  flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  color: var(--muted); font-size: 14px;
+}
+.player-controls-bar {
+  height: 48px; background: rgba(17,24,39,0.9); border-radius: 8px;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+  flex-shrink: 0; border: 1px solid var(--border);
+}
+.now-playing-label { font-size: 13px; color: var(--muted); }
+.playback-quick-btns { display: flex; gap: 8px; }
+.btn-icon {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--txt); border-radius: 6px; padding: 4px 10px;
+  font-size: 16px; cursor: pointer;
+}
+.list-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4px; flex-shrink: 0;
+}
+.list-header h3 { font-size: 14px; font-weight: 700; }
+.count-badge {
+  background: rgba(59,130,246,.2); border: 1px solid rgba(59,130,246,.3);
+  color: #93c5fd; padding: 2px 8px; border-radius: 12px; font-size: 11px;
+}
+.recordings-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.empty-hint { color: var(--muted); text-align: center; padding: 24px; font-size: 13px; }
+.record-item {
+  background: rgba(17,24,39,0.9); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+}
+.record-item:focus, .record-item.active { border-color: #38bdf8; box-shadow: 0 0 0 2px #38bdf8 !important; }
+.record-info { display: flex; flex-direction: column; gap: 3px; }
+.record-time { font-size: 13px; font-weight: 700; }
+.record-meta { font-size: 11px; color: var(--muted); }
+.select-field {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--txt); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+}
+.date-input { font-size: 13px; padding: 6px 10px; }
+.filter-controls { display: flex; align-items: center; gap: 8px; }
+.btn-primary.small { width: auto; padding: 8px 16px; font-size: 13px; }
+
+.grid-1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+.grid-4 { grid-template-columns: repeat(2,minmax(0,1fr)); grid-template-rows: repeat(2,minmax(0,1fr)); }
+.grid-6 { grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: repeat(2,minmax(0,1fr)); }
+.grid-8 { grid-template-columns: repeat(4,minmax(0,1fr)); grid-template-rows: repeat(2,minmax(0,1fr)); }
+.grid-16 { grid-template-columns: repeat(4,minmax(0,1fr)); grid-template-rows: repeat(4,minmax(0,1fr)); }
+.unused-channel { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; color:#64748b; background:#080c12; }

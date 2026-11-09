@@ -1,0 +1,8 @@
+*.ipk
+*.zip
+*.log
+.env*
+backups/
+packages/
+dist/
+node_modules/

@@ -1,0 +1,6 @@
+{
+  "name": "io.github.sics2002.dahuaviewer.backend",
+  "version": "1.0.0",
+  "main": "service.cjs",
+  "description": "Dahua backend service — go2rtc and proxy watchdog"
+}

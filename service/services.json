@@ -1,0 +1,10 @@
+{
+  "id": "io.github.sics2002.dahuaviewer.backend",
+  "description": "Dahua camera backend — auto-starts go2rtc and proxy watchdog",
+  "services": [
+    {
+      "name": "io.github.sics2002.dahuaviewer.backend",
+      "description": "go2rtc + proxy.js launcher and watchdog"
+    }
+  ]
+}

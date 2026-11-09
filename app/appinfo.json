@@ -1,0 +1,18 @@
+{
+  "id": "io.github.sics2002.dahuaviewer",
+  "version": "1.0.0",
+  "vendor": "sics2002",
+  "type": "web",
+  "main": "index.html",
+  "title": "Dahua webOS Viewer",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "resolution": "1920x1080",
+  "transparent": true,
+  "mediaBackdrop": true,
+  "allowCrossOriginRequests": true,
+  "supportTouchMode": "virtual",
+  "handlesRelaunch": false,
+  "requiredACG": [],
+  "disableBackHistoryAPI": true
+}

@@ -1,0 +1,8 @@
+streams: {}
+api:
+  listen: "127.0.0.1:11984"
+  allow_paths: ["/api/streams", "/api/ws", "/api/stream.mjpeg"]
+rtsp:
+  listen: ""
+webrtc:
+  listen: ""
