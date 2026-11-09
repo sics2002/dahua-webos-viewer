@@ -4,7 +4,7 @@
   "vendor": "sics2002",
   "type": "web",
   "main": "index.html",
-  "title": "Dahua webOS Viewer",
+  "title": "Dahua-appLGWebostV",
   "icon": "icon.png",
   "largeIcon": "largeIcon.png",
   "resolution": "1920x1080",
